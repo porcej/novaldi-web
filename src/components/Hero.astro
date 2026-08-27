@@ -1,0 +1,120 @@
+---
+import Button from './Button.astro';
+import { site } from '../content/site';
+
+interface Props {
+  title?: string;
+  lead?: string;
+  showRegister?: boolean;
+  home?: boolean;
+}
+
+const {
+  title,
+  lead = site.motto,
+  showRegister = true,
+  home = false,
+} = Astro.props;
+
+const { applicationsOpen, dates, year, applicationsStatusLabel } = site.session;
+---
+
+{
+  home ? (
+    <section class="hero-atmosphere relative overflow-hidden text-white">
+      <div class="mx-auto flex min-h-[min(88vh,52rem)] max-w-4xl flex-col items-center justify-center px-5 pb-20 pt-28 text-center md:px-8 md:pb-24 md:pt-32">
+        <img
+          src="/images/ldi-logo.jpg"
+          alt={`${site.name} logo`}
+          width="180"
+          height="180"
+          class="animate-rise h-32 w-32 rounded-full shadow-[0_16px_40px_rgba(0,0,0,0.4)] ring-[3px] ring-gold sm:h-40 sm:w-40"
+          fetchpriority="high"
+        />
+
+        <p class="animate-rise-delay mt-8 font-display text-sm font-semibold uppercase tracking-[0.22em] text-gold">
+          {dates} · Six-day residency
+        </p>
+
+        <h1 class="animate-rise-delay mt-3 font-display text-4xl font-bold uppercase leading-[0.98] tracking-wide text-white sm:text-5xl md:text-6xl">
+          Northern Virginia Fire &amp; Rescue
+          <span class="mt-1 block text-gold">Leadership Development Institute</span>
+        </h1>
+
+        <p class="animate-rise-delay-2 mt-5 max-w-xl text-lg leading-relaxed text-white/80 md:text-xl">
+          {lead}
+        </p>
+
+        {
+          showRegister && (
+            <div class="animate-rise-delay-2 mt-8 flex flex-wrap justify-center gap-3">
+              {applicationsOpen ? (
+                <>
+                  <Button href={site.registerUrl} variant="primary" external>
+                    Register for {year}
+                  </Button>
+                  <Button href="/programs" variant="ghost">
+                    View programs
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button href="/programs" variant="primary">
+                    View programs
+                  </Button>
+                  <Button href="/contact" variant="ghost">
+                    Contact us
+                  </Button>
+                </>
+              )}
+            </div>
+          )
+        }
+      </div>
+
+      <div class="border-t border-white/15 bg-black/20">
+        <dl class="mx-auto grid max-w-6xl sm:grid-cols-3">
+          <div class="border-white/10 px-5 py-5 text-center sm:border-r md:px-8">
+            <dt class="font-display text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+              When
+            </dt>
+            <dd class="mt-1 font-display text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
+              Oct 19–24, 2026
+            </dd>
+          </div>
+          <div class="border-white/10 px-5 py-5 text-center sm:border-r md:px-8">
+            <dt class="font-display text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+              Format
+            </dt>
+            <dd class="mt-1 font-display text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
+              Six-day residency
+            </dd>
+          </div>
+          <div class="px-5 py-5 text-center md:px-8">
+            <dt class="font-display text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+              Applications
+            </dt>
+            <dd class="mt-1 font-display text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
+              {applicationsOpen ? `Open ${site.session.applicationsOpened}` : applicationsStatusLabel}
+            </dd>
+            {!applicationsOpen && (
+              <dd class="mt-1 text-sm text-white/65">For the {year} session</dd>
+            )}
+          </div>
+        </dl>
+      </div>
+    </section>
+  ) : (
+    <section class="hero-atmosphere text-white">
+      <div class="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-14">
+        <p class="font-display text-sm font-semibold uppercase tracking-[0.2em] text-gold">
+          {site.shortName}
+        </p>
+        <h1 class="mt-2 max-w-3xl font-display text-4xl font-bold uppercase leading-none tracking-wide md:text-5xl">
+          {title}
+        </h1>
+        {lead && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/75">{lead}</p>}
+      </div>
+    </section>
+  )
+}

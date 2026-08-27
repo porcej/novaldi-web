@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import ProgramCard from '../components/ProgramCard.astro';
+import Button from '../components/Button.astro';
+import { site, programsCopy } from '../content/site';
+
+const { applicationsOpen, applicationsNote, dates, companySessionNumber, commandSessionNumber } =
+  site.session;
+---
+
+<BaseLayout
+  title="Programs"
+  description={`Company Officer (COLP) and Command Officer (COLMP) residencies — ${dates}.`}
+>
+  <Hero
+    title="Programs"
+    lead={`Two six-day intensive residencies, ${dates}. Build practical skills in leadership, management, command, and communication.`}
+  />
+
+  <Section
+    narrow
+    title="Six days on campus. Fully engaged."
+    lead={programsCopy.overview}
+  >
+    <div class="space-y-5 text-lg leading-relaxed text-muted">
+      <p>{programsCopy.experience}</p>
+      <p>{programsCopy.summary}</p>
+    </div>
+  </Section>
+
+  <Section tone="surface" eyebrow="Tracks" title="Choose your path">
+    <div class="grid gap-12 border-t border-navy/10 pt-10 md:grid-cols-2 md:gap-16">
+      <ProgramCard
+        title={programsCopy.company.title}
+        shortTitle={programsCopy.company.shortTitle}
+        audience={programsCopy.company.audience}
+        focus={programsCopy.company.focus}
+      />
+      <ProgramCard
+        title={programsCopy.command.title}
+        shortTitle={programsCopy.command.shortTitle}
+        audience={programsCopy.command.audience}
+        focus={programsCopy.command.focus}
+      />
+    </div>
+    <p class="mt-10 max-w-3xl text-muted">
+      October 2026 will be the {companySessionNumber}th Company Officer session and the{' '}
+      {commandSessionNumber}th Command Officer session. Leaders with additional years of experience in
+      their rank are also encouraged to apply when applications are open.
+    </p>
+  </Section>
+
+  <Section
+    tone="navy"
+    title={applicationsOpen ? 'Ready to register?' : 'Applications closed'}
+    lead={
+      applicationsOpen
+        ? `Applications open ${site.session.applicationsOpened}. Limited seats available for the ${dates} session.`
+        : applicationsNote
+    }
+  >
+    <div class="flex flex-wrap gap-3">
+      {
+        applicationsOpen ? (
+          <Button href={site.registerUrl} variant="primary" external>
+            Register now
+          </Button>
+        ) : (
+          <Button href="/contact" variant="primary">
+            Contact us
+          </Button>
+        )
+      }
+      <Button href={site.programInfoUrl} variant="ghost" external>
+        Program information (PDF)
+      </Button>
+    </div>
+  </Section>
+</BaseLayout>

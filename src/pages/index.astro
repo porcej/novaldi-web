@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import ProgramCard from '../components/ProgramCard.astro';
+import Button from '../components/Button.astro';
+import { site, aboutCopy, programsCopy } from '../content/site';
+
+const { applicationsOpen, applicationsNote, year, dates } = site.session;
+---
+
+<BaseLayout description={`${site.session.headline} ${site.name} — ${dates}.`}>
+  <Hero home lead={site.motto} />
+
+  <Section
+    narrow
+    eyebrow="About"
+    title="Calling the next generation of fire and rescue leaders"
+    lead={aboutCopy.intro}
+  >
+    <p class="text-lg leading-relaxed text-muted">{aboutCopy.mission}</p>
+    <Button href="/about" variant="gold-outline" class="mt-8">
+      Our story
+    </Button>
+  </Section>
+
+  <Section
+    tone="surface"
+    eyebrow="Programs"
+    title="Two residency tracks"
+    lead="Six-day intensive residencies for company and command officers, selected by their departments and recommended by their chief."
+  >
+    <div class="grid gap-12 border-t border-navy/10 pt-10 md:grid-cols-2 md:gap-16">
+      <ProgramCard
+        title={programsCopy.company.title}
+        shortTitle={programsCopy.company.shortTitle}
+        audience={programsCopy.company.audience}
+        focus={programsCopy.company.focus}
+        href="/programs"
+      />
+      <ProgramCard
+        title={programsCopy.command.title}
+        shortTitle={programsCopy.command.shortTitle}
+        audience={programsCopy.command.audience}
+        focus={programsCopy.command.focus}
+        href="/programs"
+      />
+    </div>
+    <Button href="/programs" variant="secondary" class="mt-10">
+      Explore programs
+    </Button>
+  </Section>
+
+  <Section
+    tone="navy"
+    eyebrow={`${year} session`}
+    title={applicationsOpen ? `Join the ${year} session` : `Applications closed for ${year}`}
+    lead={applicationsOpen ? `Applications open ${site.session.applicationsOpened}. Register through the LDI portal.` : applicationsNote}
+  >
+    {
+      applicationsOpen ? (
+        <Button href={site.registerUrl} variant="primary" external>
+          Go to register.novaldi.us
+        </Button>
+      ) : (
+        <Button href="/contact" variant="primary">
+          Contact us
+        </Button>
+      )
+    }
+  </Section>
+</BaseLayout>

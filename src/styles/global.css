@@ -1,0 +1,105 @@
+@import "tailwindcss";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/source-sans-3/400.css";
+@import "@fontsource/source-sans-3/600.css";
+@import "@fontsource/source-sans-3/700.css";
+
+@theme {
+  --color-navy: #00205b;
+  --color-navy-deep: #00153d;
+  --color-navy-mid: #0a2f6e;
+  --color-gold: #ffc72c;
+  --color-gold-dark: #e6b000;
+  --color-ink: #0c1630;
+  --color-muted: #5a6578;
+  --color-surface: #f2f4f8;
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 55%, white);
+    color: var(--color-navy);
+  }
+}
+
+@layer utilities {
+  .hero-atmosphere {
+    background-color: var(--color-navy-deep);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none'%3E%3Cpath d='M40 8 L48 28 L68 28 L52 40 L58 60 L40 48 L22 60 L28 40 L12 28 L32 28 Z' stroke='%23FFC72C' stroke-opacity='0.045' stroke-width='1.5'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(255, 199, 44, 0.1), transparent 55%),
+      linear-gradient(180deg, var(--color-navy) 0%, var(--color-navy-deep) 60%, #000d24 100%);
+    background-size: 100px 100px, auto, auto;
+    background-repeat: repeat, no-repeat, no-repeat;
+  }
+
+  .animate-rise {
+    animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-rise-delay {
+    animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+  }
+
+  .animate-rise-delay-2 {
+    animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+  }
+
+  .animate-settle {
+    animation: settle 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-rise-delay-2,
+  .animate-settle {
+    animation: none;
+  }
+}

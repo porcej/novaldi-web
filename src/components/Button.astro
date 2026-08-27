@@ -1,0 +1,33 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'gold-outline';
+  external?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'primary', external = false, class: className = '' } = Astro.props;
+
+const variants: Record<NonNullable<Props['variant']>, string> = {
+  primary:
+    'bg-gold text-navy hover:bg-gold-dark focus-visible:outline-gold shadow-sm',
+  secondary:
+    'bg-navy text-white hover:bg-navy-mid focus-visible:outline-gold',
+  ghost:
+    'bg-transparent text-white border border-white/35 hover:border-gold hover:text-gold focus-visible:outline-gold',
+  'gold-outline':
+    'bg-transparent text-navy border border-navy/25 hover:border-gold hover:text-navy focus-visible:outline-gold',
+};
+---
+
+<a
+  href={href}
+  class:list={[
+    'inline-flex items-center justify-center gap-2 px-6 py-3 font-display text-lg font-semibold uppercase tracking-wide transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+    variants[variant],
+    className,
+  ]}
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+>
+  <slot />
+</a>

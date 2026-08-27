@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import { site, aboutCopy } from '../content/site';
+
+const { applicationsOpen, applicationsNote, dates, companySessionNumber, commandSessionNumber } =
+  site.session;
+---
+
+<BaseLayout
+  title="About"
+  description={`About ${site.shortName}: established in 2013 to develop Northern Virginia fire and rescue leaders.`}
+>
+  <Hero
+    title="About the Institute"
+    lead="Established in 2013 to close a regional gap in leadership development for fire and rescue officers."
+  />
+
+  <Section narrow title="Our story" lead={aboutCopy.intro}>
+    <div class="space-y-5 text-lg leading-relaxed text-muted">
+      <p>{aboutCopy.mission}</p>
+      <p>{aboutCopy.approach}</p>
+      <p>{aboutCopy.reach}</p>
+    </div>
+  </Section>
+
+  <Section tone="surface" eyebrow="What we stand for" title={site.tagline.replace(/\.$/, '')}>
+    <div class="grid gap-10 border-t border-navy/10 pt-10 md:grid-cols-3">
+      <div>
+        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-navy">
+          Art &amp; science
+        </h3>
+        <p class="mt-3 leading-relaxed text-muted">
+          Leadership, management, and communication taught by national-level speakers from within and outside the fire service—with methods to put learning into practice.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-navy">
+          Regional &amp; beyond
+        </h3>
+        <p class="mt-3 leading-relaxed text-muted">
+          Career and volunteer fire/rescue personnel from inside and outside the Metropolitan Washington COG learn together.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-navy">
+          Networked leaders
+        </h3>
+        <p class="mt-3 leading-relaxed text-muted">
+          Cross-organizational communication and lifelong professional networks are a primary goal of every session.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    eyebrow={`${site.session.year} session`}
+    title={dates}
+    lead={`The ${companySessionNumber}th Company Officer session and ${commandSessionNumber}th Command Officer session. ${applicationsOpen ? `Applications open ${site.session.applicationsOpened}.` : applicationsNote}`}
+  >
+    <div class="flex flex-wrap gap-3">
+      {
+        applicationsOpen ? (
+          <Button href={site.registerUrl} variant="primary" external>
+            Register
+          </Button>
+        ) : (
+          <Button href="/contact" variant="primary">
+            Contact us
+          </Button>
+        )
+      }
+      <Button href={site.nversUrl} variant="gold-outline" external>
+        LDI on NVERS
+      </Button>
+    </div>
+  </Section>
+</BaseLayout>

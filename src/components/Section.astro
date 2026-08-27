@@ -1,0 +1,70 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  tone?: 'light' | 'surface' | 'navy';
+  /** Constrain body copy width while keeping the section aligned to the site grid */
+  narrow?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  eyebrow,
+  title,
+  lead,
+  tone = 'light',
+  narrow = false,
+  class: className = '',
+} = Astro.props;
+
+const tones = {
+  light: 'bg-white text-ink',
+  surface: 'bg-surface text-ink',
+  navy: 'bg-navy text-white',
+};
+---
+
+<section id={id} class:list={['py-16 md:py-20', tones[tone], className]}>
+  <div class="mx-auto max-w-6xl px-5 md:px-8">
+    <div class:list={[narrow && 'max-w-2xl']}>
+      {
+        eyebrow && (
+          <p
+            class:list={[
+              'font-display text-sm font-semibold uppercase tracking-[0.18em]',
+              tone === 'navy' ? 'text-gold' : 'text-navy-mid',
+            ]}
+          >
+            {eyebrow}
+          </p>
+        )
+      }
+      <h2
+        class:list={[
+          'mt-2 font-display text-3xl font-bold uppercase leading-none tracking-wide md:text-4xl',
+          tone === 'navy' ? 'text-white' : 'text-navy',
+        ]}
+      >
+        {title}
+      </h2>
+      {
+        lead && (
+          <p
+            class:list={[
+              'mt-4 text-lg leading-relaxed',
+              tone === 'navy' ? 'text-white/75' : 'text-muted',
+            ]}
+          >
+            {lead}
+          </p>
+        )
+      }
+    </div>
+    <div class:list={['mt-8', narrow && 'max-w-2xl']}>
+      <slot />
+    </div>
+  </div>
+</section>

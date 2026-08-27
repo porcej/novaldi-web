@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import { site } from '../content/site';
+
+const { applicationsOpen, applicationsNote, dates, applicationsOpened } = site.session;
+---
+
+<BaseLayout
+  title="Contact"
+  description={`Contact ${site.shortName} at ${site.email}.`}
+>
+  <Hero
+    title="Contact"
+    lead={`Questions about the ${dates} session? Reach the LDI team directly.`}
+  />
+
+  <Section title="Get in touch">
+    <div class="grid gap-12 border-t border-navy/10 pt-10 md:grid-cols-2">
+      <div>
+        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-navy">Email</h3>
+        <p class="mt-2 text-muted">Program questions and general inquiries.</p>
+        <a
+          href={`mailto:${site.email}`}
+          class="mt-4 inline-block font-display text-2xl font-bold uppercase tracking-wide text-navy hover:text-navy-mid"
+        >
+          {site.email}
+        </a>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-navy">
+          Applications
+        </h3>
+        <p class="mt-2 text-muted">
+          {
+            applicationsOpen
+              ? `Applications open ${applicationsOpened}. Register through the LDI portal.`
+              : applicationsNote
+          }
+        </p>
+        {
+          applicationsOpen ? (
+            <Button href={site.registerUrl} variant="primary" external class="mt-4">
+              Go to register.novaldi.us
+            </Button>
+          ) : (
+            <Button href={`mailto:${site.email}`} variant="primary" class="mt-4">
+              Email {site.email}
+            </Button>
+          )
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    tone="surface"
+    title="Northern Virginia Emergency Response System"
+    lead="NVFR LDI is part of the NVERS Fire/EMS regional training portfolio."
+  >
+    <div class="flex flex-wrap gap-3">
+      <Button href={site.nversUrl} variant="secondary" external>
+        LDI on NVERS
+      </Button>
+      <Button href={site.nversHomeUrl} variant="gold-outline" external>
+        nvers.org
+      </Button>
+    </div>
+  </Section>
+</BaseLayout>
