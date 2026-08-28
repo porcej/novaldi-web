@@ -38,13 +38,13 @@ npm run preview
 ## Deploy to Cloudflare Pages
 
 1. Push this repo to GitHub (`porcej/novaldi-web`).
-2. In Cloudflare Dashboard → **Workers & Pages** → connect the repository (or redeploy).
-3. Build settings:
+2. In Cloudflare Dashboard → **Workers & Pages** → your Pages project → **Settings** → **Builds & deployments**:
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
+3. Do **not** rely on a Wrangler config for this static site (none is committed). If the dashboard still shows output `dist/client`, change it to `dist`.
 4. Attach custom domain `www.novaldi.us` when ready. Keep `register.novaldi.us` as a separate app/host.
 
-You can also deploy from the CLI with Wrangler after a local build:
+Deploy from the CLI after a local build:
 
 ```bash
 npx wrangler pages deploy dist --project-name=novaldi-web
