@@ -1,6 +1,6 @@
 # NVFR LDI Marketing Site
 
-Marketing website for the **Northern Virginia Fire & Rescue Leadership Development Institute (NVFR LDI)**, built with [Astro](https://astro.build) and designed for [Cloudflare Pages](https://developers.cloudflare.com/pages/).
+Marketing website for the **Northern Virginia Fire & Rescue Leadership Development Institute (NVFR LDI)**, built with [Astro](https://astro.build) for [Cloudflare Pages](https://developers.cloudflare.com/pages/).
 
 Live domain target: [https://www.novaldi.us](https://www.novaldi.us)  
 Registration portal: [https://register.novaldi.us](https://register.novaldi.us)
@@ -27,28 +27,21 @@ npm run dev
 npm run build
 ```
 
-Output is written to `dist/` (static assets for Cloudflare Pages).
+Output is written to `dist/` (plain static HTML/CSS/JS — no Workers adapter).
 
-Preview locally:
+## Deploy (recommended): GitHub Actions → Pages Direct Upload
 
-```bash
-npm run preview
-```
+The Cloudflare **Git build** for Astro 7 currently fails on the reserved `ASSETS` Wrangler path. This repo deploys via [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) instead:
 
-## Deploy to Cloudflare Pages
+1. In Cloudflare → **Manage account** → **API Tokens**, create a token with **Cloudflare Pages — Edit**.
+2. In GitHub → repo **Settings** → **Secrets and variables** → **Actions**, add:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+3. In Cloudflare Pages project **Settings** → **Builds**:
+   - **Disable automatic deployments** from Git (or delete the Git connection) so the broken CF builder does not keep failing.
+4. Push to `main` — GitHub Actions builds and runs `wrangler pages deploy dist --project-name=novaldi-web`.
 
-1. Push this repo to GitHub (`porcej/novaldi-web`).
-2. In Cloudflare Dashboard → **Workers & Pages** → your Pages project → **Settings** → **Builds & deployments**:
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-3. Do **not** rely on a Wrangler config for this static site (none is committed). If the dashboard still shows output `dist/client`, change it to `dist`.
-4. Attach custom domain `www.novaldi.us` when ready. Keep `register.novaldi.us` as a separate app/host.
-
-Deploy from the CLI after a local build:
-
-```bash
-npx wrangler pages deploy dist --project-name=novaldi-web
-```
+Confirm the Pages project name is `novaldi-web` (or change the workflow `project-name`).
 
 ## Brand
 
@@ -56,4 +49,4 @@ npx wrangler pages deploy dist --project-name=novaldi-web
 - Gold `#FFC72C`
 - Logo: `public/images/ldi-logo.jpg`
 
-Session facts (dates, application window, URLs) live in `src/content/site.ts`.
+Session facts live in `src/content/site.ts`. Flip `session.applicationsOpen` to `true` when registration reopens.
