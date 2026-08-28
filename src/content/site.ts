@@ -8,6 +8,10 @@ export const site = {
   registerUrl: 'https://register.novaldi.us',
   nversUrl: 'https://www.nvers.org/fireems/LDI',
   nversHomeUrl: 'https://www.nvers.org/',
+  social: [
+    { label: 'Facebook', href: 'https://www.facebook.com/NVFRLDI' },
+    { label: 'X', href: 'https://x.com/nvfrldi1' },
+  ],
   flyerUrl: 'https://www.nvers.org/sites/default/files/LDI%202026%20Flyer.pdf',
   programInfoUrl:
     'https://www.nvers.org/sites/default/files/2026%20LDI%20COLP%20COLMP%20Program%20Information_0.pdf',

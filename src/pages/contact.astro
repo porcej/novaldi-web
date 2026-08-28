@@ -55,6 +55,25 @@ const { applicationsOpen, applicationsNote, dates, applicationsOpened } = site.s
     </div>
   </Section>
 
+  <Section eyebrow="Social" title="Follow NVFR LDI">
+    <ul class="flex flex-wrap gap-4 border-t border-navy/10 pt-10">
+      {
+        site.social.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-display text-lg font-semibold uppercase tracking-wide text-navy hover:text-navy-mid"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
   <Section
     tone="surface"
     title="Northern Virginia Emergency Response System"

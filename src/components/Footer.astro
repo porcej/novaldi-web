@@ -65,6 +65,20 @@ import { site } from '../content/site';
               NVERS
             </a>
           </li>
+          {
+            site.social.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-white/75 hover:text-gold"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </div>
     </div>
