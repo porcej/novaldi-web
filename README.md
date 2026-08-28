@@ -9,7 +9,7 @@ Registration portal: [https://register.novaldi.us](https://register.novaldi.us)
 
 | Route | Description |
 |-------|-------------|
-| `/` | Home — 2026 session hero, about teaser, where/when, programs |
+| `/` | Home — 2026 session hero, about teaser, session facts, programs |
 | `/about` | Institute history, mission, NVERS parent org |
 | `/programs` | Company & Command residency programs |
 | `/contact` | Email and registration links |
@@ -27,7 +27,7 @@ npm run dev
 npm run build
 ```
 
-Output is written to `dist/client/` (static assets for Cloudflare Pages).
+Output is written to `dist/` (static assets for Cloudflare Pages).
 
 Preview locally:
 
@@ -38,16 +38,16 @@ npm run preview
 ## Deploy to Cloudflare Pages
 
 1. Push this repo to GitHub (`porcej/novaldi-web`).
-2. In Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → connect the repository.
+2. In Cloudflare Dashboard → **Workers & Pages** → connect the repository (or redeploy).
 3. Build settings:
    - **Build command:** `npm run build`
-   - **Build output directory:** `dist/client`
+   - **Build output directory:** `dist`
 4. Attach custom domain `www.novaldi.us` when ready. Keep `register.novaldi.us` as a separate app/host.
 
 You can also deploy from the CLI with Wrangler after a local build:
 
 ```bash
-npx wrangler pages deploy dist/client --project-name=novaldi-web
+npx wrangler pages deploy dist --project-name=novaldi-web
 ```
 
 ## Brand
