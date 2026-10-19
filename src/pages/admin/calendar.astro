@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+
+const buttonClass =
+  'inline-flex items-center justify-center px-5 py-2.5 font-display text-base font-semibold uppercase tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:opacity-50';
+const labelClass = 'font-display text-lg font-semibold uppercase tracking-wide text-navy';
+---
+
+<BaseLayout title="Calendar Settings" noindex>
+  <Hero title="Calendar Settings" lead="Choose the Google Calendar shown on /calendar/." />
+
+  <section class="bg-white py-12 md:py-16">
+    <div class="mx-auto max-w-6xl px-5 md:px-8">
+      <form id="calendar-form" class="max-w-3xl space-y-6">
+        <div>
+          <label for="calendar-url" class={labelClass}>Google Calendar embed link</label>
+          <p class="mt-1 text-sm text-muted">
+            In Google Calendar, open the calendar's <strong>Settings</strong> → <strong>Integrate calendar</strong>,
+            then paste the <strong>Embed code</strong>, the embed link, the <strong>Public URL</strong>, or the{' '}
+            <strong>Calendar ID</strong>. The calendar must be shared publicly. Leave blank to hide the calendar.
+          </p>
+          <textarea
+            id="calendar-url"
+            name="url"
+            rows="4"
+            class="mt-2 block w-full rounded border border-navy/20 bg-white px-4 py-3 font-mono text-sm text-ink shadow-sm focus:border-navy focus:outline-none focus:ring-2 focus:ring-gold"
+          ></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button type="submit" class:list={[buttonClass, 'bg-gold text-navy hover:bg-gold-dark']}>Save</button>
+          <a href="/calendar/" target="_blank" rel="noopener" class:list={[buttonClass, 'border border-navy/25 text-navy hover:border-gold']}>
+            View public page
+          </a>
+        </div>
+
+        <p id="status" class="text-muted" role="status">Loading current setting…</p>
+      </form>
+
+      <div id="preview" class="mt-10 hidden">
+        <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-navy">Preview</h2>
+        <div id="preview-frame" class="mt-4 border border-navy/10 shadow-sm"></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#calendar-form')!;
+  const input = document.querySelector<HTMLTextAreaElement>('#calendar-url')!;
+  const statusEl = document.querySelector<HTMLElement>('#status')!;
+  const preview = document.querySelector<HTMLElement>('#preview')!;
+  const previewFrame = document.querySelector<HTMLElement>('#preview-frame')!;
+  const saveButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const endpoint = new URL('/api/admin/calendar', location.origin);
+
+  function showPreview(url: string | null) {
+    if (!url) {
+      preview.classList.add('hidden');
+      previewFrame.replaceChildren();
+      return;
+    }
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.title = 'Calendar preview';
+    iframe.className = 'block h-[600px] w-full';
+    iframe.style.border = '0';
+    previewFrame.replaceChildren(iframe);
+    preview.classList.remove('hidden');
+  }
+
+  async function load() {
+    try {
+      const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+      const data = (await response.json()) as { url?: string | null; error?: string };
+      if (!response.ok) throw new Error(data.error ?? `Request failed (${response.status})`);
+      input.value = data.url ?? '';
+      showPreview(data.url ?? null);
+      statusEl.textContent = data.url ? 'Calendar is published.' : 'No calendar is set yet.';
+    } catch (error) {
+      statusEl.textContent = `Could not load the setting: ${(error as Error).message}`;
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    saveButton.disabled = true;
+    statusEl.textContent = 'Saving…';
+    try {
+      const response = await fetch(endpoint, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ url: input.value }),
+      });
+      const data = (await response.json().catch(() => ({}))) as { url?: string | null; error?: string };
+      if (!response.ok) throw new Error(data.error ?? `Request failed (${response.status})`);
+      input.value = data.url ?? '';
+      showPreview(data.url ?? null);
+      statusEl.textContent = data.url
+        ? 'Saved. The public calendar page may take up to a minute to update.'
+        : 'Saved. The calendar is now hidden.';
+    } catch (error) {
+      statusEl.textContent = `Could not save: ${(error as Error).message}`;
+    } finally {
+      saveButton.disabled = false;
+    }
+  });
+
+  load();
+</script>

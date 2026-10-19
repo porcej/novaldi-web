@@ -15,6 +15,8 @@ Registration portal: [https://register.novaldi.us](https://register.novaldi.us)
 | `/contact` | Email and registration links |
 | `/graduation-rsvp` | Graduation RSVP form (name, guests, accommodations) |
 | `/admin/graduation-rsvp` | Password-protected RSVP table with CSV / Excel export |
+| `/calendar` | Embedded Google Calendar (set at `/admin/calendar`) |
+| `/admin/calendar` | Password-protected setting for the calendar embed link |
 
 ## Develop
 
@@ -45,9 +47,9 @@ The Cloudflare **Git build** for Astro 7 currently fails on the reserved `ASSETS
 
 Confirm the Pages project name is `novaldi-web` (or change the workflow `project-name`).
 
-## Graduation RSVP backend
+## Graduation RSVP and calendar backend
 
-RSVPs are stored in Cloudflare D1 by Pages Functions in `functions/` (deployed automatically with the site). `public/_routes.json` limits Functions to `/admin/*` and `/api/*`; every other page stays static.
+RSVPs and the calendar embed link are stored in Cloudflare D1 by Pages Functions in `functions/` (deployed automatically with the site). `public/_routes.json` limits Functions to `/admin/*` and `/api/*`; every other page stays static.
 
 One-time setup in the Cloudflare dashboard:
 
