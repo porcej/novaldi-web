@@ -1,0 +1,200 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+
+const buttonClass =
+  'inline-flex items-center justify-center px-5 py-2.5 font-display text-base font-semibold uppercase tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:opacity-50';
+const statLabel = 'font-display text-xs font-semibold uppercase tracking-[0.18em] text-navy-mid';
+const statValue = 'mt-1 font-display text-4xl font-bold text-navy';
+---
+
+<BaseLayout title="Graduation RSVPs" noindex>
+  <Hero title="Graduation RSVPs" lead="Responses submitted through /graduation-rsvp/." />
+
+  <section class="bg-white py-12 md:py-16">
+    <div class="mx-auto max-w-6xl px-5 md:px-8">
+      <dl class="grid gap-6 border-b border-navy/10 pb-8 sm:grid-cols-3">
+        <div class="border-l-4 border-gold pl-4">
+          <dt class={statLabel}>Responses</dt>
+          <dd id="stat-responses" class={statValue}>–</dd>
+        </div>
+        <div class="border-l-4 border-gold pl-4">
+          <dt class={statLabel}>Total guests</dt>
+          <dd id="stat-guests" class={statValue}>–</dd>
+        </div>
+        <div class="border-l-4 border-gold pl-4">
+          <dt class={statLabel}>Need accommodations</dt>
+          <dd id="stat-accommodations" class={statValue}>–</dd>
+        </div>
+      </dl>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button id="refresh" type="button" class:list={[buttonClass, 'border border-navy/25 text-navy hover:border-gold']}>
+          Refresh
+        </button>
+        <button id="export-csv" type="button" disabled class:list={[buttonClass, 'bg-navy text-white hover:bg-navy-mid']}>
+          Export CSV
+        </button>
+        <button id="export-xlsx" type="button" disabled class:list={[buttonClass, 'bg-gold text-navy hover:bg-gold-dark']}>
+          Export Excel
+        </button>
+      </div>
+
+      <p id="status" class="mt-6 text-muted" role="status">Loading responses…</p>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="min-w-full border-collapse text-left text-sm">
+          <thead class="bg-navy text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-display text-sm uppercase tracking-wider">Submitted</th>
+              <th scope="col" class="px-4 py-3 font-display text-sm uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-4 py-3 text-right font-display text-sm uppercase tracking-wider">Guests</th>
+              <th scope="col" class="px-4 py-3 font-display text-sm uppercase tracking-wider">Accommodations</th>
+              <th scope="col" class="px-4 py-3 font-display text-sm uppercase tracking-wider">Details</th>
+            </tr>
+          </thead>
+          <tbody id="rsvp-rows" class="divide-y divide-navy/10"></tbody>
+          <tfoot class="border-t-2 border-navy bg-surface font-semibold text-navy">
+            <tr>
+              <th scope="row" colspan="2" class="px-4 py-3 font-display uppercase tracking-wider">Total guests</th>
+              <td id="footer-guests" class="px-4 py-3 text-right">0</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import writeXlsxFile from 'write-excel-file/browser';
+  import type { RsvpRecord, RsvpSummary } from '../../content/rsvp';
+
+  const rowsEl = document.querySelector<HTMLTableSectionElement>('#rsvp-rows')!;
+  const statusEl = document.querySelector<HTMLElement>('#status')!;
+  const refreshButton = document.querySelector<HTMLButtonElement>('#refresh')!;
+  const csvButton = document.querySelector<HTMLButtonElement>('#export-csv')!;
+  const xlsxButton = document.querySelector<HTMLButtonElement>('#export-xlsx')!;
+
+  const dateFormat = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  let rsvps: RsvpRecord[] = [];
+  let summary: RsvpSummary = { responses: 0, totalGuests: 0, needingAccommodations: 0 };
+
+  const headers = ['Submitted (ET)', 'Name', 'Guests', 'Needs accommodations', 'Accommodation details'];
+
+  function formatDate(iso: string) {
+    return dateFormat.format(new Date(iso));
+  }
+
+  function setText(selector: string, value: string | number) {
+    document.querySelector<HTMLElement>(selector)!.textContent = String(value);
+  }
+
+  function cell(text: string, className = '') {
+    const td = document.createElement('td');
+    td.className = `px-4 py-3 align-top ${className}`;
+    td.textContent = text;
+    return td;
+  }
+
+  function render() {
+    rowsEl.replaceChildren(
+      ...rsvps.map((rsvp) => {
+        const tr = document.createElement('tr');
+        tr.append(
+          cell(formatDate(rsvp.createdAt), 'whitespace-nowrap text-muted'),
+          cell(rsvp.name, 'font-semibold text-ink'),
+          cell(String(rsvp.guests), 'text-right'),
+          cell(rsvp.needsAccommodations ? 'Yes' : 'No'),
+          cell(rsvp.accommodationDetails ?? '', 'max-w-md whitespace-pre-wrap text-muted'),
+        );
+        return tr;
+      }),
+    );
+    setText('#stat-responses', summary.responses);
+    setText('#stat-guests', summary.totalGuests);
+    setText('#stat-accommodations', summary.needingAccommodations);
+    setText('#footer-guests', summary.totalGuests);
+    statusEl.textContent = rsvps.length ? `Showing ${rsvps.length} responses.` : 'No responses yet.';
+    csvButton.disabled = xlsxButton.disabled = rsvps.length === 0;
+  }
+
+  async function load() {
+    refreshButton.disabled = true;
+    statusEl.textContent = 'Loading responses…';
+    try {
+      const response = await fetch(new URL('/api/admin/rsvps', location.origin), { headers: { Accept: 'application/json' } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? `Request failed (${response.status})`);
+      rsvps = data.rsvps;
+      summary = data.summary;
+      render();
+    } catch (error) {
+      statusEl.textContent = `Could not load responses: ${(error as Error).message}`;
+    } finally {
+      refreshButton.disabled = false;
+    }
+  }
+
+  function exportRows() {
+    return rsvps.map((rsvp) => [
+      formatDate(rsvp.createdAt),
+      rsvp.name,
+      rsvp.guests,
+      rsvp.needsAccommodations ? 'Yes' : 'No',
+      rsvp.accommodationDetails ?? '',
+    ]);
+  }
+
+  function fileStem() {
+    return `graduation-rsvps-${new Date().toISOString().slice(0, 10)}`;
+  }
+
+  // Leading =, +, -, @ would be evaluated as formulas when the CSV is opened in a spreadsheet.
+  function csvValue(value: string | number) {
+    let text = String(value);
+    if (typeof value === 'string' && /^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  }
+
+  function download(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  csvButton.addEventListener('click', () => {
+    const lines = [headers, ...exportRows(), [], ['Total guests', '', summary.totalGuests, '', '']];
+    const csv = lines.map((line) => line.map(csvValue).join(',')).join('\r\n');
+    download(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }), `${fileStem()}.csv`);
+  });
+
+  xlsxButton.addEventListener('click', async () => {
+    const bold = (value: string | number) => ({ value, fontWeight: 'bold' as const });
+    await writeXlsxFile(
+      [
+        headers.map(bold),
+        ...exportRows(),
+        [],
+        [bold('Total guests'), null, bold(summary.totalGuests), null, null],
+      ],
+      {
+        sheet: 'Graduation RSVPs',
+        columns: [{ width: 22 }, { width: 30 }, { width: 10 }, { width: 22 }, { width: 50 }],
+        stickyRowsCount: 1,
+      },
+    ).toFile(`${fileStem()}.xlsx`);
+  });
+
+  refreshButton.addEventListener('click', load);
+  load();
+</script>

@@ -13,6 +13,8 @@ Registration portal: [https://register.novaldi.us](https://register.novaldi.us)
 | `/about` | Institute history, mission, NVERS parent org |
 | `/programs` | Company & Command residency programs |
 | `/contact` | Email and registration links |
+| `/graduation-rsvp` | Graduation RSVP form (name, guests, accommodations) |
+| `/admin/graduation-rsvp` | Password-protected RSVP table with CSV / Excel export |
 
 ## Develop
 
@@ -42,6 +44,25 @@ The Cloudflare **Git build** for Astro 7 currently fails on the reserved `ASSETS
 4. Push to `main` — GitHub Actions builds and runs `wrangler pages deploy dist --project-name=novaldi-web`.
 
 Confirm the Pages project name is `novaldi-web` (or change the workflow `project-name`).
+
+## Graduation RSVP backend
+
+RSVPs are stored in Cloudflare D1 by Pages Functions in `functions/` (deployed automatically with the site). `public/_routes.json` limits Functions to `/admin/*` and `/api/*`; every other page stays static.
+
+One-time setup in the Cloudflare dashboard:
+
+1. **Storage & Databases** → **D1** → create a database (e.g. `novaldi-rsvp`). The table is created automatically on first use.
+2. Pages project `novaldi-web` → **Settings** → **Bindings** → add a **D1 database** binding named `DB` pointing at that database (Production and Preview).
+3. Pages project → **Settings** → **Variables and Secrets** → add an encrypted variable `ADMIN_PASSWORD` (Production and Preview).
+4. Redeploy (push to `main`), then visit `/admin/` and sign in with username `admin` and that password.
+
+The admin area returns `401` for everyone if `ADMIN_PASSWORD` is not set.
+
+Local testing with a local D1 database (admin password `local-admin`):
+
+```bash
+npm run preview:functions
+```
 
 ## Brand
 

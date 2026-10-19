@@ -8,12 +8,14 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
 const {
   title = site.name,
   description = site.tagline,
   ogImage = '/images/ldi-logo.jpg',
+  noindex = false,
 } = Astro.props;
 
 const fullTitle = title === site.name ? title : `${title} | ${site.shortName}`;
@@ -29,6 +31,7 @@ const absoluteOg = new URL(ogImage, site.url).href;
     <meta name="generator" content={Astro.generator} />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
     <link rel="apple-touch-icon" href="/images/ldi-logo.jpg" />

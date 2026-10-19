@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+---
+
+<BaseLayout title="Admin" noindex>
+  <Hero title="Admin" lead="Tools for NVFR LDI staff." />
+
+  <section class="bg-white py-16 md:py-20">
+    <div class="mx-auto max-w-6xl px-5 md:px-8">
+      <ul class="grid gap-8 border-t border-navy/10 pt-10 md:grid-cols-2">
+        <li>
+          <a href="/admin/graduation-rsvp/" class="group block">
+            <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-navy group-hover:text-navy-mid">
+              Graduation RSVPs
+            </h2>
+            <p class="mt-2 text-muted">
+              View responses, total guest count, and export to CSV or Excel.
+            </p>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
